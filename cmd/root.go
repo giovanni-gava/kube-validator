@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var outputFormat string
+
 var rootCmd = &cobra.Command{
 	Use:   "kube-validator",
 	Short: "Valida arquivos YAML do Kubernetes",
@@ -30,11 +32,17 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-		result := validator.CheckResources(obj)
-		for _, r := range result {
-			fmt.Println("🔍", r)
-		}
+		var results []validator.ValidationResult
+		results = append(results, validator.CheckResources(obj)...)
+		results = append(results, validator.CheckProbes(obj)...)
+		results = append(results, validator.CheckImagePullPolicy(obj)...)
+
+		validator.PrintResults(results, outputFormat)
 	},
+}
+
+func init() {
+	rootCmd.Flags().StringVarP(&outputFormat, "output", "o", "pretty", "Formato de saída: pretty | json")
 }
 
 func Execute() {
