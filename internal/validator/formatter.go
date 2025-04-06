@@ -12,7 +12,7 @@ func PrintResults(results []ValidationResult, format string) {
 	case "json":
 		data, err := json.MarshalIndent(results, "", "  ")
 		if err != nil {
-			fmt.Println("Erro ao gerar JSON:", err)
+			fmt.Println("Error while generating JSON:", err)
 			return
 		}
 		fmt.Println(string(data))

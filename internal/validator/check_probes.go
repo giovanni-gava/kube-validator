@@ -8,13 +8,11 @@ import (
 
 func CheckProbes(obj *unstructured.Unstructured) []ValidationResult {
 	var results []ValidationResult
+	kind := obj.GetKind()
 
 	containers, found, err := unstructured.NestedSlice(obj.Object, "spec", "containers")
 	if err != nil || !found {
-		return append(results, ValidationResult{
-			Message: "❌ containers not found",
-			Level:   "error",
-		})
+		return results // já tratado em CheckContainersStructure
 	}
 
 	for _, c := range containers {
@@ -23,15 +21,14 @@ func CheckProbes(obj *unstructured.Unstructured) []ValidationResult {
 
 		if _, ok, _ := unstructured.NestedMap(container, "livenessProbe"); !ok {
 			results = append(results, ValidationResult{
-				Message: fmt.Sprintf("⚠️ container %v is missing livenessProbe", name),
-				Level:   "warning",
+				Message: fmt.Sprintf("💡 [SUGGESTION] [%s] container '%v' is missing livenessProbe – recommended for better availability", kind, name),
+				Level:   "suggestion",
 			})
 		}
-
 		if _, ok, _ := unstructured.NestedMap(container, "readinessProbe"); !ok {
 			results = append(results, ValidationResult{
-				Message: fmt.Sprintf("⚠️ container %v is missing readinessProbe", name),
-				Level:   "warning",
+				Message: fmt.Sprintf("💡 [SUGGESTION] [%s] container '%v' is missing readinessProbe – recommended for graceful rollout", kind, name),
+				Level:   "suggestion",
 			})
 		}
 	}

@@ -13,36 +13,44 @@ var outputFormat string
 
 var rootCmd = &cobra.Command{
 	Use:   "kube-validator",
-	Short: "Valida arquivos YAML do Kubernetes",
+	Short: "Validate Kubernetes YAML files for correctness and best practices",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			fmt.Println("Você deve fornecer o caminho para o YAML")
+			fmt.Println("You must provide the path to the YAML file")
 			os.Exit(1)
 		}
 
 		data, err := os.ReadFile(args[0])
 		if err != nil {
-			fmt.Println("Erro ao ler arquivo:", err)
+			fmt.Println("Error reading file:", err)
 			return
 		}
 
-		obj, err := parser.ParseYAMLToUnstructured(data)
-		if err != nil {
-			fmt.Println("Erro ao parsear:", err)
-			return
+		parseResults := parser.ParseYAMLDocuments(data)
+		var allValidations []validator.ValidationResult
+
+		for _, res := range parseResults {
+			if res.Error != nil {
+				allValidations = append(allValidations, validator.ValidationResult{
+					Message: fmt.Sprintf("❌ [SYNTAX] YAML syntax error: %v", res.Error),
+					Level:   "error",
+				})
+				continue
+			}
+
+			obj := res.Object
+			allValidations = append(allValidations, validator.CheckContainersStructure(obj)...)
+			allValidations = append(allValidations, validator.CheckResources(obj)...)
+			allValidations = append(allValidations, validator.CheckProbes(obj)...)
+			allValidations = append(allValidations, validator.CheckImagePullPolicy(obj)...)
 		}
 
-		var results []validator.ValidationResult
-		results = append(results, validator.CheckResources(obj)...)
-		results = append(results, validator.CheckProbes(obj)...)
-		results = append(results, validator.CheckImagePullPolicy(obj)...)
-
-		validator.PrintResults(results, outputFormat)
+		validator.PrintResults(allValidations, outputFormat)
 	},
 }
 
 func init() {
-	rootCmd.Flags().StringVarP(&outputFormat, "output", "o", "pretty", "Formato de saída: pretty | json")
+	rootCmd.Flags().StringVarP(&outputFormat, "output", "o", "pretty", "Output format: pretty | json")
 }
 
 func Execute() {
