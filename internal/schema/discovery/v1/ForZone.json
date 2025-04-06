@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.discovery.v1.ForZone",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.discovery.v1.ForZone": {
+      "description": "ForZone provides information about which zones should consume this endpoint.",
+      "properties": {
+        "name": {
+          "description": "name represents the name of the zone.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.discovery.v1.ForZone",
+  "type": "object"
+}

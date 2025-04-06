@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.flowcontrol.v1.PriorityLevelConfigurationReference",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.flowcontrol.v1.PriorityLevelConfigurationReference": {
+      "description": "PriorityLevelConfigurationReference contains information that points to the \"request-priority\" being used.",
+      "properties": {
+        "name": {
+          "description": "`name` is the name of the priority level configuration being referenced Required.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.flowcontrol.v1.PriorityLevelConfigurationReference",
+  "type": "object"
+}

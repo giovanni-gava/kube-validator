@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.discovery.v1.ForNode",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.discovery.v1.ForNode": {
+      "description": "ForNode provides information about which nodes should consume this endpoint.",
+      "properties": {
+        "name": {
+          "description": "name represents the name of the node.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.discovery.v1.ForNode",
+  "type": "object"
+}

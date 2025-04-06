@@ -64,7 +64,13 @@ var rootCmd = &cobra.Command{
 
 			obj := res.Object
 			kind := obj.GetKind()
+			apiVersion := obj.GetAPIVersion()
 
+			// Automatically validate all resources using OpenAPI schemas
+			schemaResults := validator.ValidateWithSchema(obj.Object, kind, apiVersion)
+			allValidations = append(allValidations, schemaResults...)
+
+			// Add additional custom validators if needed
 			switch kind {
 			case "Deployment":
 				allValidations = append(allValidations, validator.CheckDeploymentStructure(obj)...)

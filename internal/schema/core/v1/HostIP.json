@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.core.v1.HostIP",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.core.v1.HostIP": {
+      "description": "HostIP represents a single IP address allocated to the host.",
+      "properties": {
+        "ip": {
+          "description": "IP is the IP address assigned to the host",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ip"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.core.v1.HostIP",
+  "type": "object"
+}

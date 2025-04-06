@@ -1,0 +1,26 @@
+{
+  "$ref": "#/definitions/io.k8s.api.storagemigration.v1alpha1.GroupVersionResource",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.storagemigration.v1alpha1.GroupVersionResource": {
+      "description": "The names of the group, the version, and the resource.",
+      "properties": {
+        "group": {
+          "description": "The name of the group.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The name of the resource.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The name of the version.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.storagemigration.v1alpha1.GroupVersionResource",
+  "type": "object"
+}

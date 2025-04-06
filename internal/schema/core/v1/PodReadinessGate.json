@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.core.v1.PodReadinessGate",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.core.v1.PodReadinessGate": {
+      "description": "PodReadinessGate contains the reference to a pod condition",
+      "properties": {
+        "conditionType": {
+          "description": "ConditionType refers to a condition in the pod's condition list with matching type.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "conditionType"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.core.v1.PodReadinessGate",
+  "type": "object"
+}
