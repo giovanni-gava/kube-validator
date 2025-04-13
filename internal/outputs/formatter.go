@@ -1,13 +1,15 @@
-package validator
+// internal/output/formatter.go
+package output
 
 import (
 	"encoding/json"
 	"fmt"
 
 	"github.com/fatih/color"
+	"github.com/giovanni-gava/kube-validator/internal/validator"
 )
 
-func PrintResults(results []ValidationResult, format string) {
+func Print(results []validator.ValidationResult, format string) {
 	switch format {
 	case "json":
 		data, err := json.MarshalIndent(results, "", "  ")

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/giovanni-gava/kube-validator/internal/output"
 	"github.com/giovanni-gava/kube-validator/internal/parser"
 	"github.com/giovanni-gava/kube-validator/internal/validator"
 	"github.com/spf13/cobra"
@@ -104,7 +105,7 @@ var rootCmd = &cobra.Command{
 			})
 		}
 
-		validator.PrintResults(allValidations, outputFormat)
+		output.Print(allValidations, outputFormat)
 	},
 }
 
