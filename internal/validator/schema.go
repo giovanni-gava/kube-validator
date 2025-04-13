@@ -3,108 +3,68 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/fatih/color"
+	"github.com/giovanni-gava/kube-validator/internal/validator"
 )
 
-func ValidateWithSchema(obj map[string]interface{}, kind string, apiVersion string) []ValidationResult {
-	var results []ValidationResult
-
-	schemaPath := "internal/schema/merged/openapi.json"
-	schemaFile, err := os.ReadFile(schemaPath)
-	if err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Failed to read merged schema: %v", err),
-		}}
+func Print(results []validator.ValidationResult, format string) {
+	switch format {
+	case "json":
+		printJSON(results)
+	default:
+		printPretty(results)
 	}
-
-	var schemaData map[string]interface{}
-	if err := json.Unmarshal(schemaFile, &schemaData); err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Failed to parse schema: %v", err),
-		}}
-	}
-
-	definitionKey := fmt.Sprintf("io.k8s.api.%s.%s", apiGroupVersion(apiVersion), kind)
-	definition, found := schemaData["definitions"].(map[string]interface{})[definitionKey]
-	if !found {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("No schema definition found for %s (%s)", kind, apiVersion),
-		}}
-	}
-
-	required, ok := definition.(map[string]interface{})["required"].([]interface{})
-	if !ok || required == nil {
-		required = []interface{}{} // Corrige o erro: Garante sempre um array
-	}
-
-	specificSchema := map[string]interface{}{
-		"$schema":     "http://json-schema.org/draft-07/schema#",
-		"title":       definitionKey,
-		"type":        "object",
-		"properties":  definition.(map[string]interface{})["properties"],
-		"required":    required, // Usa a correção aqui
-		"definitions": schemaData["definitions"],
-	}
-
-	specificSchemaJSON, err := json.Marshal(specificSchema)
-	if err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Failed to encode specific schema: %v", err),
-		}}
-	}
-
-	schemaLoader := gojsonschema.NewSchemaLoader()
-	schemaLoader.Validate = true
-
-	schemaDoc := gojsonschema.NewBytesLoader(specificSchemaJSON)
-	schema, err := schemaLoader.Compile(schemaDoc)
-	if err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Failed to compile schema: %v", err),
-		}}
-	}
-
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Failed to encode manifest to JSON: %v", err),
-		}}
-	}
-
-	documentLoader := gojsonschema.NewBytesLoader(jsonBytes)
-	res, err := schema.Validate(documentLoader)
-	if err != nil {
-		return []ValidationResult{{
-			Level:   "error",
-			Message: fmt.Sprintf("Schema validation error: %v", err),
-		}}
-	}
-
-	if !res.Valid() {
-		for _, e := range res.Errors() {
-			results = append(results, ValidationResult{
-				Level:   "error",
-				Message: fmt.Sprintf("[%s] %s", e.Field(), e.Description()),
-			})
-		}
-	}
-
-	return results
 }
 
-// Função já corrigida anteriormente
-func apiGroupVersion(apiVersion string) string {
-	if apiVersion == "v1" {
-		return "core.v1"
+func printJSON(results []validator.ValidationResult) {
+	data, err := json.MarshalIndent(results, "", "  ")
+	if err != nil {
+		fmt.Println("Error generating JSON:", err)
+		return
 	}
-	return strings.ReplaceAll(apiVersion, "/", ".")
+	fmt.Println(string(data))
+}
+
+func printPretty(results []validator.ValidationResult) {
+	for _, r := range results {
+		msg := stripKnownPrefixes(r.Message) // limpa prefixos duplicados + emoji
+
+		switch r.Level {
+		case "error":
+			color.New(color.FgRed).Printf("[ERROR] %s\n", msg)
+		case "warning":
+			color.New(color.FgYellow).Printf("[WARN]  %s\n", msg)
+		case "suggestion":
+			color.New(color.FgCyan).Printf("[SUGGESTION] %s\n", msg)
+		case "info":
+			color.New(color.FgGreen).Printf("[INFO] %s\n", msg)
+		default:
+			fmt.Println(msg)
+		}
+
+		if r.DocLink != "" {
+			color.New(color.FgHiBlack).Printf("Doc: %s\n", r.DocLink)
+		}
+	}
+}
+
+func stripKnownPrefixes(s string) string {
+	s = strings.TrimSpace(s)
+	// remove emojis conhecidos
+	emojis := []string{"💡", "❌", "✅", "⚠️"}
+	for _, e := range emojis {
+		s = strings.TrimPrefix(s, e)
+	}
+	// remove prefixos
+	prefixes := []string{"[SUGGESTION]", "[ERROR]", "[INFO]", "[WARN]"}
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			s = strings.TrimPrefix(s, prefix)
+			s = strings.TrimSpace(s)
+			break
+		}
+	}
+	return s
 }
