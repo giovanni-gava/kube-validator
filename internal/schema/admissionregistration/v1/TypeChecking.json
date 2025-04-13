@@ -1,0 +1,22 @@
+{
+  "$ref": "#/definitions/io.k8s.api.admissionregistration.v1.TypeChecking",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.admissionregistration.v1.TypeChecking": {
+      "description": "TypeChecking contains results of type checking the expressions in the ValidatingAdmissionPolicy",
+      "properties": {
+        "expressionWarnings": {
+          "description": "The type checking warnings for each expression.",
+          "items": {
+            "$ref": "#/definitions/io.k8s.api.admissionregistration.v1.ExpressionWarning"
+          },
+          "type": "array",
+          "x-kubernetes-list-type": "atomic"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.admissionregistration.v1.TypeChecking",
+  "type": "object"
+}

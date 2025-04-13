@@ -1,0 +1,18 @@
+{
+  "$ref": "#/definitions/io.k8s.api.resource.v1beta1.DeviceClassConfiguration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.resource.v1beta1.DeviceClassConfiguration": {
+      "description": "DeviceClassConfiguration is used in DeviceClass.",
+      "properties": {
+        "opaque": {
+          "$ref": "#/definitions/io.k8s.api.resource.v1beta1.OpaqueDeviceConfiguration",
+          "description": "Opaque provides driver-specific configuration parameters."
+        }
+      },
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.resource.v1beta1.DeviceClassConfiguration",
+  "type": "object"
+}

@@ -1,0 +1,19 @@
+{
+  "$ref": "#/definitions/io.k8s.api.core.v1.NodeSwapStatus",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.core.v1.NodeSwapStatus": {
+      "description": "NodeSwapStatus represents swap memory information.",
+      "properties": {
+        "capacity": {
+          "description": "Total amount of swap memory in bytes.",
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.core.v1.NodeSwapStatus",
+  "type": "object"
+}

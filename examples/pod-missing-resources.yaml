@@ -4,6 +4,9 @@ metadata:
   name: test-pod
 spec:
   containers:
+      volumes:
+     - name: test-volume
+       emptyDir: {} 
     - name: nginx
       image: nginx
 

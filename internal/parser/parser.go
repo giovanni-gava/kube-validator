@@ -1,21 +1,54 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/serializer/yaml"
+	yamlserializer "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
+	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
 )
 
-// Serializer para decodificar YAML para objetos do Kubernetes
-var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+type ParseResult struct {
+	Object *unstructured.Unstructured
+	Error  error
+	Raw    string
+}
 
-// ParseYAMLToUnstructured converte um arquivo YAML em um objeto genérico do Kubernetes (Unstructured)
-func ParseYAMLToUnstructured(yamlContent []byte) (*unstructured.Unstructured, error) {
-	obj := &unstructured.Unstructured{}
-	_, _, err := decUnstructured.Decode(yamlContent, nil, obj)
-	if err != nil {
-		return nil, fmt.Errorf("erro ao parsear YAML: %v", err)
+var decUnstructured = yamlserializer.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+
+// ParseYAMLDocuments recebe YAMLs (com ou sem múltiplos documentos) e retorna ParseResults
+func ParseYAMLDocuments(yamlContent []byte) []ParseResult {
+	var results []ParseResult
+
+	decoder := k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(yamlContent), 4096)
+
+	for {
+		var raw map[string]interface{}
+		err := decoder.Decode(&raw)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			results = append(results, ParseResult{
+				Object: nil,
+				Error:  fmt.Errorf("erro de sintaxe: %v", err),
+				Raw:    "",
+			})
+			continue
+		}
+		if len(raw) == 0 {
+			continue
+		}
+
+		obj := &unstructured.Unstructured{Object: raw}
+		results = append(results, ParseResult{
+			Object: obj,
+			Error:  nil,
+			Raw:    "", // opcional
+		})
 	}
-	return obj, nil
+
+	return results
 }

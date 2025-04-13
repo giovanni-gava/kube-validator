@@ -1,0 +1,21 @@
+{
+  "$ref": "#/definitions/io.k8s.api.resource.v1beta1.DeviceCapacity",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "io.k8s.api.resource.v1beta1.DeviceCapacity": {
+      "description": "DeviceCapacity describes a quantity associated with a device.",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/io.k8s.apimachinery.pkg.api.resource.Quantity",
+          "description": "Value defines how much of a certain device capacity is available."
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "io.k8s.api.resource.v1beta1.DeviceCapacity",
+  "type": "object"
+}

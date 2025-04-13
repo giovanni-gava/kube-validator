@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  NAME: nginx-app
+  labels:
+    App: nginx
+spec:
+  replicas: "three"
+  template:
+    metadata:
+      labels:
+        App: nginx
+    spec:
+      containers:
+      - name: nginx
+        Image: nginx:latest
+        volumes:
+        - name: data-volume
+          emptyDir: {}
+        liveness_probe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+  STRATEGY:
+    TYPE: Rolling

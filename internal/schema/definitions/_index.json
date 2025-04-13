@@ -1,0 +1,11 @@
+{
+    "definitions": {
+      "io.k8s.api.apps.v1.DeploymentStatus": {
+        "$ref": "./io_k8s_api_apps_v1_DeploymentStatus.json"
+      },
+      "io.k8s.api.apps.v1.DeploymentCondition": {
+        "$ref": "./io_k8s_api_apps_v1_DeploymentCondition.json"
+      }
+    }
+  }
+  
